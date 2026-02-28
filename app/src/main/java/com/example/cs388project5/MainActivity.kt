@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.cs388project5.databinding.ActivityMainBinding
@@ -35,6 +36,25 @@ class MainActivity : AppCompatActivity() {
         foodEntryAdapter = FoodEntryAdapter(foodEntries)
         foodRecyclerView.adapter = foodEntryAdapter
         foodRecyclerView.layoutManager = LinearLayoutManager(this)
+
+        val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(
+            0,
+            ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT
+        ) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val entry = foodEntries[position]
+                deleteEntry(entry.id)
+            }
+        })
+
+        itemTouchHelper.attachToRecyclerView(foodRecyclerView)
 
         observeFoodEntries()
 
@@ -96,6 +116,12 @@ class MainActivity : AppCompatActivity() {
             (application as BitFitApplication).db.foodEntryDao().insert(
                 FoodEntryEntity.create(name, calories)
             )
+        }
+    }
+
+    private fun deleteEntry(id: Long) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            (application as BitFitApplication).db.foodEntryDao().delete(id)
         }
     }
 }
