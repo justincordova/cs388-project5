@@ -11,11 +11,11 @@ interface FoodEntryDao {
     fun getAll(): Flow<List<FoodEntryEntity>>
 
     @Insert
-    fun insert(entry: FoodEntryEntity): Long
+    suspend fun insert(entry: FoodEntryEntity): Unit
 
     @Query("DELETE FROM food_entries WHERE id = :id")
-    fun delete(id: Long): Int
+    suspend fun delete(id: Long): Unit
 
     @Query("DELETE FROM food_entries")
-    fun deleteAll(): Int
+    suspend fun deleteAll(): Unit
 }
