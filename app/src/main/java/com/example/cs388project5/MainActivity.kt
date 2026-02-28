@@ -2,6 +2,7 @@ package com.example.cs388project5
 
 import android.os.Bundle
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var foodRecyclerView: RecyclerView
     private lateinit var binding: ActivityMainBinding
     private lateinit var addButton: Button
+    private lateinit var averageText: TextView
     private val foodEntries = mutableListOf<FoodEntryEntity>()
     private lateinit var foodEntryAdapter: FoodEntryAdapter
 
@@ -28,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         foodRecyclerView = binding.foodRecyclerView
         addButton = binding.addButton
+        averageText = binding.averageText
 
         foodEntryAdapter = FoodEntryAdapter(foodEntries)
         foodRecyclerView.adapter = foodEntryAdapter
@@ -43,6 +46,16 @@ class MainActivity : AppCompatActivity() {
     private fun observeFoodEntries() {
         lifecycleScope.launch {
             (application as BitFitApplication).db.foodEntryDao().getAll().collect { databaseList ->
+                foodEntries.clear()
+                foodEntries.addAll(databaseList)
+
+                val average = if (databaseList.isNotEmpty()) {
+                    databaseList.sumOf { it.calories } / databaseList.size
+                } else {
+                    0
+                }
+                averageText.text = "Average: $average calories"
+
                 val oldSize = foodEntries.size
                 foodEntries.clear()
                 foodEntries.addAll(databaseList)
