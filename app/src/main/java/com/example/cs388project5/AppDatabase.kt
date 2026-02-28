@@ -23,6 +23,7 @@ abstract class AppDatabase : RoomDatabase() {
                 context.applicationContext,
                 AppDatabase::class.java,
                 "BitFit-db"
-            ).build()
+            ).fallbackToDestructiveMigration()
+            .build()
     }
 }
