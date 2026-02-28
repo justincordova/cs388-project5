@@ -1,9 +1,11 @@
 package com.example.cs388project5
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +24,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var averageText: TextView
     private val foodEntries = mutableListOf<FoodEntryEntity>()
     private lateinit var foodEntryAdapter: FoodEntryAdapter
+    private var photoUri: Uri? = null
+    private val pickPhoto = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        photoUri = uri
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +98,11 @@ class MainActivity : AppCompatActivity() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_entry, null)
         val foodNameInput = dialogView.findViewById<TextInputEditText>(R.id.foodNameInput)
         val caloriesInput = dialogView.findViewById<TextInputEditText>(R.id.caloriesInput)
+        val photoButton = dialogView.findViewById<Button>(R.id.photoButton)
+
+        photoButton.setOnClickListener {
+            pickPhoto.launch("image/*")
+        }
 
         AlertDialog.Builder(this)
             .setTitle("Add Food Entry")
@@ -105,16 +116,16 @@ class MainActivity : AppCompatActivity() {
                     return@setPositiveButton
                 }
 
-                addEntry(foodName, calories)
+                addEntry(foodName, calories, photoUri?.toString())
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun addEntry(name: String, calories: Int) {
+    private fun addEntry(name: String, calories: Int, photoUri: String? = null) {
         lifecycleScope.launch(Dispatchers.IO) {
             (application as BitFitApplication).db.foodEntryDao().insert(
-                FoodEntryEntity.create(name, calories)
+                FoodEntryEntity.create(name, calories, photoUri)
             )
         }
     }
