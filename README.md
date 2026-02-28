@@ -4,7 +4,7 @@ Submitted by: **Justin Cordova**
 
 **FitBit** is a health metrics app that allows users to track their daily food intake and calorie consumption.
 
-Time spent: **X** hours spent in total
+Time spent: **6** hours spent in total
 
 ## Required Features
 
@@ -20,8 +20,8 @@ The following **optional** features are implemented:
 
 - [x] **Create a UI for tracking averages and trends in metrics**
 - [x] **Improve and customize the user interface through styling and coloring**
-- [ ] **Implement orientation responsivity**
-- [ ] **Add a daily photo feature**
+- [x] **Implement orientation responsivity**
+- [x] **Add a daily photo feature**
 
 The following **additional** features are implemented:
 
