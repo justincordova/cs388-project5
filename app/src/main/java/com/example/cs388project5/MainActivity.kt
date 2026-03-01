@@ -72,25 +72,48 @@ class MainActivity : AppCompatActivity() {
     private fun observeFoodEntries() {
         lifecycleScope.launch {
             (application as BitFitApplication).db.foodEntryDao().getAll().collect { databaseList ->
+                android.util.Log.d("DEBUG", "Database list size: ${databaseList.size}")
+                databaseList.forEachIndexed { index, entry ->
+                    android.util.Log.d("DEBUG", "Entry $index: id=${entry.id}, name=${entry.name}, calories=${entry.calories}")
+                }
+
+                val diffResult = androidx.recyclerview.widget.DiffUtil.calculateDiff(
+                    FoodEntryDiffCallback(foodEntries, databaseList)
+                )
+
                 foodEntries.clear()
                 foodEntries.addAll(databaseList)
+
+                android.util.Log.d("DEBUG", "After clear/add: foodEntries size=${foodEntries.size}")
+                foodEntries.forEachIndexed { index, entry ->
+                    android.util.Log.d("DEBUG", "foodEntry $index: id=${entry.id}, name=${entry.name}, calories=${entry.calories}")
+                }
 
                 val average = if (databaseList.isNotEmpty()) {
                     databaseList.sumOf { it.calories } / databaseList.size
                 } else {
                     0
                 }
-                averageText.text = "Average: $average calories"
+                averageText.text = getString(R.string.average_calories, average)
 
-                val oldSize = foodEntries.size
-                foodEntries.clear()
-                foodEntries.addAll(databaseList)
-                if (foodEntries.size > oldSize) {
-                    foodEntryAdapter.notifyItemRangeInserted(oldSize, foodEntries.size - oldSize)
-                } else {
-                    foodEntryAdapter.notifyDataSetChanged()
-                }
+                diffResult.dispatchUpdatesTo(foodEntryAdapter)
             }
+        }
+    }
+
+    private class FoodEntryDiffCallback(
+        private val oldList: List<FoodEntryEntity>,
+        private val newList: List<FoodEntryEntity>
+    ) : androidx.recyclerview.widget.DiffUtil.Callback() {
+        override fun getOldListSize() = oldList.size
+        override fun getNewListSize() = newList.size
+
+        override fun areItemsTheSame(oldPos: Int, newPos: Int): Boolean {
+            return oldList[oldPos].id == newList[newPos].id
+        }
+
+        override fun areContentsTheSame(oldPos: Int, newPos: Int): Boolean {
+            return oldList[oldPos] == newList[newPos]
         }
     }
 
@@ -105,28 +128,29 @@ class MainActivity : AppCompatActivity() {
         }
 
         AlertDialog.Builder(this)
-            .setTitle("Add Food Entry")
+            .setTitle(R.string.add_food_entry)
             .setView(dialogView)
             .setPositiveButton("Add") { _, _ ->
                 val foodName = foodNameInput.text?.toString()?.trim()
                 val calories = caloriesInput.text?.toString()?.toIntOrNull()
 
                 if (foodName.isNullOrEmpty() || calories == null) {
-                    Toast.makeText(this, "Please enter valid values", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.please_enter_valid_values, Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
 
                 addEntry(foodName, calories, photoUri?.toString())
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(R.string.cancel, null)
             .show()
     }
 
     private fun addEntry(name: String, calories: Int, photoUri: String? = null) {
+        val entry = FoodEntryEntity.create(name, calories, photoUri)
+        android.util.Log.d("DEBUG", "Adding entry: name=$name, calories=$calories, photoUri=$photoUri")
         lifecycleScope.launch(Dispatchers.IO) {
-            (application as BitFitApplication).db.foodEntryDao().insert(
-                FoodEntryEntity.create(name, calories, photoUri)
-            )
+            val id = (application as BitFitApplication).db.foodEntryDao().insert(entry)
+            android.util.Log.d("DEBUG", "Inserted entry with id=$id")
         }
     }
 

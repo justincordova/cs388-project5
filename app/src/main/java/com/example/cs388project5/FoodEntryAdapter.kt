@@ -20,6 +20,7 @@ class FoodEntryAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val entry = foodEntries[position]
+        android.util.Log.d("DEBUG_ADAPTER", "onBindViewHolder position=$position: id=${entry.id}, name=${entry.name}, calories=${entry.calories}")
         holder.bind(entry)
     }
 
@@ -31,14 +32,18 @@ class FoodEntryAdapter(
         private val foodPhoto = itemView.findViewById<ImageView>(R.id.foodPhoto)
 
         fun bind(entry: FoodEntryEntity) {
+            android.util.Log.d("DEBUG_ADAPTER", "bind: name=${entry.name}, calories=${entry.calories}")
             foodNameTextView.text = entry.name
-            caloriesTextView.text = "${entry.calories} CALORIES"
+            caloriesTextView.text = itemView.context.getString(R.string.calories_format, entry.calories)
             entry.photoUri?.let {
                 Glide.with(itemView.context)
                     .load(it)
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .into(foodPhoto)
-            } ?: foodPhoto.setImageResource(R.drawable.ic_launcher_foreground)
+            } ?: run {
+                Glide.with(itemView.context).clear(foodPhoto)
+                foodPhoto.setImageResource(R.drawable.ic_launcher_foreground)
+            }
         }
     }
 }

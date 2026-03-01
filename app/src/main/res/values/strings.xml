@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">cs388project5</string>
+    <string name="average_calories">Average: %d calories</string>
+    <string name="add_food_entry">Add Food Entry</string>
+    <string name="please_enter_valid_values">Please enter valid values</string>
+    <string name="cancel">Cancel</string>
+    <string name="calories_format">%d CALORIES</string>
 </resources>
