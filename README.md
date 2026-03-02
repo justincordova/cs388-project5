@@ -14,8 +14,8 @@ The following **required** functionality is completed:
   - Chosen metric(s): Food/Calories tracking
 - [x] **There is a "create entry" UI that prompts users to make their daily entry**
 - [x] **New entries are saved in a database and then updated in the RecyclerView**
-- [x] **On application restart, previously entered entries are preserved (i.e., are *persistent*)**
- 
+- [x] **On application restart, previously entered entries are preserved (i.e., are _persistent_)**
+
 The following **optional** features are implemented:
 
 - [x] **Create a UI for tracking averages and trends in metrics**
@@ -31,8 +31,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='project5.gif' title='Video Walkthrough' width='300' alt='Video Walkthrough' />
-
+<img src='project5.gif' title='Video Walkthrough' width='1000' alt='Video Walkthrough' />
 
 ## Notes
 
@@ -53,3 +52,4 @@ No major challenges encountered. The Room database implementation followed the l
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+
