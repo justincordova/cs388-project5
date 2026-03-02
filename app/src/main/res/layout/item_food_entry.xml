@@ -24,6 +24,7 @@
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
+        android:layout_marginStart="16dp"
         app:layout_constraintStart_toEndOf="@+id/foodPhoto"
         app:layout_constraintTop_toTopOf="@+id/foodPhoto"
         app:layout_constraintBottom_toBottomOf="@+id/foodPhoto"
